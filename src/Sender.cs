@@ -19,21 +19,21 @@ namespace ElectronChat
             this.node = node;
 
             //Establish secure connection
-            byte[] rsaKey = Program.ReadAll(stream);
+            byte[] rsaKey = Program.Read(stream);
 
             //Generate a key for AES256
             new Random().NextBytes(key);
 
-            Program.WriteAll(stream, Crypto.RSAEncrypt(Encoding.UTF8.GetString(rsaKey), key));
+            Program.Write(stream, Crypto.RSAEncrypt(Encoding.UTF8.GetString(rsaKey), key));
 
             //Register
-            Program.WriteAll(stream, Crypto.AES256Encrypt(key, $"{Program.settings.Name} {Program.settings.Port}"));
+            Program.Write(stream, Crypto.AES256Encrypt(key, $"{Program.settings.Name} {Program.settings.Port}"));
         }
         
         public string Send(string data)
         {
-            Program.WriteAll(stream, Crypto.AES256Encrypt(key, data));
-            return Crypto.AES256Decrypt(key, Program.ReadAll(stream));
+            Program.Write(stream, Crypto.AES256Encrypt(key, data));
+            return Crypto.AES256Decrypt(key, Program.Read(stream));
         }
 
         public void Close()

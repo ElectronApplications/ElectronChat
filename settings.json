@@ -4,8 +4,13 @@
   "Port": 57394,
   "Nodes": [
     {
-      "Name": "Laptop",
-      "IP": "192.168.1.13",
+      "Name": "ElectronApps",
+      "IP": "0.0.0.0",
+      "Port": 57394
+    },
+    {
+      "Name": "ElectronApps",
+      "IP": "127.0.0.1",
       "Port": 57394
     }
   ]

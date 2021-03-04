@@ -32,20 +32,17 @@ namespace ElectronChat
         {
             try
             {
-                byte[] bytes = new byte[Program.PacketSize];
-                String data = null;
-
                 NetworkStream stream = client.GetStream();
 
                 //Establish secure connection
                 byte[] key = new byte[32];
                 var keysRSA = Crypto.RSACreate();
 
-                Program.WriteAll(stream, Encoding.UTF8.GetBytes(keysRSA.publicKey));
-                key = Crypto.RSADecrypt(keysRSA.privateKey, Program.ReadAll(stream));
+                Program.Write(stream, Encoding.UTF8.GetBytes(keysRSA.publicKey));
+                key = Crypto.RSADecrypt(keysRSA.privateKey, Program.Read(stream));
 
                 //Register node
-                string[] requestReg = Crypto.AES256Decrypt(key, Program.ReadAll(stream)).Split(" ");
+                string[] requestReg = Crypto.AES256Decrypt(key, Program.Read(stream)).Split(" ");
                 Node node = new Node() { IP = ((IPEndPoint) client.Client.RemoteEndPoint).Address.ToString(), Name = requestReg[0], Port = int.Parse(requestReg[1]) };
                 if (!Program.ContainsNode(node) && new Sender(node).Send("Ping") == "Pong")
                 {
@@ -57,15 +54,15 @@ namespace ElectronChat
                 {
                     try
                     {
-                        data = Crypto.AES256Decrypt(key, Program.ReadAll(stream));
-                        if (data == "Chat")
+                        String msg = Crypto.AES256Decrypt(key, Program.Read(stream));
+                        if (msg == "Chat")
                         {
                             Chat chat = new Chat(stream, key, node);
                             Program.chats.Add(chat);
                             break;
                         }
                         else
-                            Program.WriteAll(stream, Crypto.AES256Encrypt(key, ParseRequest(data, client))); 
+                            Program.Write(stream, Crypto.AES256Encrypt(key, ParseRequest(msg, client))); 
                     }
                     catch (Exception) { break; }
                 }

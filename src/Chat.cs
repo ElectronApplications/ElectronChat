@@ -26,7 +26,7 @@ namespace ElectronChat
             {
                 while (true)
                 {
-                    string message = Crypto.AES256Decrypt(key, Program.ReadAll(stream));
+                    string message = Crypto.AES256Decrypt(key, Program.Read(stream));
                     messages.Add(message);
                 }
             }
@@ -40,7 +40,7 @@ namespace ElectronChat
         {
             try
             {
-                Program.WriteAll(stream, Crypto.AES256Encrypt(key, message));
+                Program.Write(stream, Crypto.AES256Encrypt(key, message));
             }
             catch (Exception)
             {

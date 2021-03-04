@@ -12,10 +12,9 @@ namespace ElectronChat
 {
     class Program
     {
-        public const int PacketSize = 256;
-        
         public static Settings settings;
         public static List<Chat> chats = new List<Chat>();
+        
         static void Main(string[] args)
         {
             settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText("settings.json"));
@@ -121,6 +120,8 @@ namespace ElectronChat
                 if (new Sender(add).Send("Ping") == "Pong")
                     settings.Nodes.Add(add);
             }
+
+            SaveSettings();
         }
 
         public static bool ContainsNode(Node node)
@@ -131,44 +132,21 @@ namespace ElectronChat
             return false;
         }
 
-        public static void WriteAll(NetworkStream stream, byte[] msg)
+        public static void Write(NetworkStream stream, byte[] msg)
         {
-            int packetsAmount = (int) Math.Ceiling((double) msg.Length / PacketSize);
-
-            List<byte> writeList = Encoding.UTF8.GetBytes(packetsAmount+"").ToList();
-            while (writeList.Count != PacketSize)
-                writeList.Add(0x00);
-            byte[] writeArray = writeList.ToArray();
-            stream.Write(writeArray);
-            
-            List<byte> msgList = msg.ToList();
-            while (msgList.Count % PacketSize != 0)
-                msgList.Add(0x00);
-            msg = msgList.ToArray();
-
-            for (int i = 0; i < packetsAmount; i++)
-            {
-                writeArray = new byte[PacketSize];
-                Array.Copy(msg, i*256, writeArray, 0, 256);
-                stream.Write(writeArray);
-            }
-            stream.Flush();
+            stream.Write(BitConverter.GetBytes(msg.Length), 0, 4);
+            stream.Write(msg, 0, msg.Length);
         }
 
-        public static byte[] ReadAll(NetworkStream stream)
+        public static byte[] Read(NetworkStream stream)
         {
-            byte[] buffer = new byte[PacketSize];
-            stream.Read(buffer);
-            int packetsAmount = int.Parse(Encoding.UTF8.GetString(buffer));
-            
-            List<byte> finalMsg = new List<byte>();
-            for (int i = 0; i < packetsAmount; i++)
-            {
-                stream.Read(buffer);
-                finalMsg.AddRange(buffer);
-            }
-            stream.Flush();
-            return TrimBytes(finalMsg.ToArray());
+            byte[] buffer = new byte[4];
+            stream.Read(buffer, 0, 4);
+            int length = BitConverter.ToInt32(buffer);
+
+            buffer = new byte[length];
+            stream.Read(buffer, 0, length);
+            return buffer;
         }
 
         public static void SaveSettings()
