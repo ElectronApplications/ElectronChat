@@ -1,0 +1,12 @@
+{
+  "Name": "ElectronApps",
+  "IP": "0.0.0.0",
+  "Port": 57394,
+  "Nodes": [
+    {
+      "Name": "Laptop",
+      "IP": "192.168.1.13",
+      "Port": 57394
+    }
+  ]
+}
