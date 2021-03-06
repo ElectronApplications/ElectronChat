@@ -5,11 +5,11 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 
-namespace ElectronChat
+namespace ElectronChat.Networking
 {
     class Listener
     {
-        TcpListener tcpListener;
+        private readonly TcpListener tcpListener;
 
         public Listener(IPAddress ip, int port)
         {
@@ -38,23 +38,28 @@ namespace ElectronChat
                 byte[] key = new byte[32];
                 var keysRSA = Crypto.RSACreate();
 
-                Program.Write(stream, Encoding.UTF8.GetBytes(keysRSA.publicKey));
-                key = Crypto.RSADecrypt(keysRSA.privateKey, Program.Read(stream));
+                NetUtils.Write(stream, Encoding.UTF8.GetBytes(keysRSA.publicKey));
+                key = Crypto.RSADecrypt(keysRSA.privateKey, NetUtils.Read(stream));
 
                 //Register node
-                string[] requestReg = Crypto.AES256Decrypt(key, Program.Read(stream)).Split(" ");
-                Node node = new Node() { IP = ((IPEndPoint) client.Client.RemoteEndPoint).Address.ToString(), Name = requestReg[0], Port = int.Parse(requestReg[1]) };
-                if (!Program.ContainsNode(node) && new Sender(node).Send("Ping") == "Pong")
+                string[] requestReg = Crypto.AES256Decrypt(key, NetUtils.Read(stream)).Split(" ");
+                Node node;
+                string ip = ((IPEndPoint) client.Client.RemoteEndPoint).Address.ToString();
+                if (Utils.ContainsNode(requestReg[0], ip, int.Parse(requestReg[1])))
+                    node = Utils.GetNode(requestReg[0], ip, int.Parse(requestReg[1]));
+                else
                 {
+                    node = new Node() { IP = ip, Name = requestReg[0], Port = int.Parse(requestReg[1]) };
+                    new Sender(node).Send("Ping"); //if it throws an exception, the connection will close
                     Program.settings.Nodes.Add(node);
-                    Program.SaveSettings();
+                    Utils.SaveSettings();
                 }
 
                 while(true)
                 {
                     try
                     {
-                        String msg = Crypto.AES256Decrypt(key, Program.Read(stream));
+                        String msg = Crypto.AES256Decrypt(key, NetUtils.Read(stream));
                         if (msg == "Chat")
                         {
                             Chat chat = new Chat(stream, key, node);
@@ -62,12 +67,14 @@ namespace ElectronChat
                             break;
                         }
                         else
-                            Program.Write(stream, Crypto.AES256Encrypt(key, ParseRequest(msg, client))); 
+                            NetUtils.Write(stream, Crypto.AES256Encrypt(key, ParseRequest(msg, client))); 
                     }
                     catch (Exception) { break; }
                 }
             }
-            catch (Exception) {}
+            catch (Exception) {
+                client.Close();
+            }
         }
 
         string ParseRequest(string request, TcpClient client)

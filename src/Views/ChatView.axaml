@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:ElectronChat.Views.ChatView"
+        x:Class="ElectronChat.Views.ChatView">
+
+        <Grid ColumnDefinitions="*, 60" RowDefinitions="*, 32" Background="#ffffff">
+                <ListBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Items="{Binding Messages}" Background="#ffffff" Margin="2">
+                        <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                        <DockPanel>
+                                                <TextBlock Foreground="#4863a0" FontSize="12" Text="{Binding SenderName}" DockPanel.Dock="Top"/>
+                                                <TextBlock Foreground="#444444" FontSize="10" Text="{Binding DateString}" DockPanel.Dock="Bottom"/>
+                                                <TextBlock FontSize="16" Text="{Binding MessageText}"/>
+                                        </DockPanel>
+                                </DataTemplate>
+                        </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding MessageText}"/>
+                <Button IsDefault="True" Grid.Column="1" Grid.Row="1" Command="{Binding SendMessage}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">Send</Button>
+        </Grid>
+
+</UserControl>

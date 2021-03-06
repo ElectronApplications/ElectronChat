@@ -1,15 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.Sockets;
 using System.Threading;
+using ElectronChat.Models;
 
-namespace ElectronChat
+namespace ElectronChat.Networking
 {
     class Chat
     {
-        NetworkStream stream;
-        public List<string> messages = new List<string>();
-        public Node opponent;
+        private readonly NetworkStream stream;
+        private ObservableCollection<MessageItem> messages = new ObservableCollection<MessageItem>();
+        public readonly Node opponent;
+
+        public ObservableCollection<MessageItem> Messages {
+            get => messages;
+        }
+
         private byte[] key;
 
         public Chat(NetworkStream stream, byte[] key, Node node)
@@ -26,8 +33,9 @@ namespace ElectronChat
             {
                 while (true)
                 {
-                    string message = Crypto.AES256Decrypt(key, Program.Read(stream));
-                    messages.Add(message);
+                    string messageText = Crypto.AES256Decrypt(key, NetUtils.Read(stream));
+                    DateTime time = DateTime.Now;
+                    messages.Add(new MessageItem() { SenderName = opponent.Name, MessageText = messageText, Date = time });
                 }
             }
             catch (Exception)
@@ -40,7 +48,8 @@ namespace ElectronChat
         {
             try
             {
-                Program.Write(stream, Crypto.AES256Encrypt(key, message));
+                NetUtils.Write(stream, Crypto.AES256Encrypt(key, message));
+                messages.Add(new MessageItem(){ Date = DateTime.Now, MessageText = message, SenderName = Program.settings.Name });
             }
             catch (Exception)
             {

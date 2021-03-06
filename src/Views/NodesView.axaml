@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:ElectronChat.Views.NodesView"
+        x:Class="ElectronChat.Views.NodesView">
+
+        <Grid RowDefinitions="30, 30, *" ColumnDefinitions="*, 30" Background="#ffffff">
+                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding OnlyChats}">Show only chats</CheckBox>
+                <Button Grid.Row="0" Grid.Column="1" Command="{Binding RefreshNodes}">
+                        <Image Source="/src/Assets/refresh.png"/>
+                </Button>
+                <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Search}"/>
+                
+                <ListBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Items="{Binding Nodes}" Background="#ffffff" Margin="2" SelectedItem="{Binding SelectedNode}">
+                        <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                        <DockPanel>
+                                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                                                        <TextBlock Foreground="#4863a0" FontSize="10" Text="{Binding IP}"/>
+                                                        <TextBlock Foreground="#4863a0" FontSize="10" Text=":"/>
+                                                        <TextBlock Foreground="#4863a0" FontSize="10" Text="{Binding Port}"/>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Name}"/>
+                                        </DockPanel>
+                                </DataTemplate>
+                        </ListBox.ItemTemplate>
+                </ListBox>
+        </Grid>
+
+</UserControl>

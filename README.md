@@ -6,6 +6,6 @@ First, you need to edit settings.json file. Fill your name, you may not change I
 Then you'll need to run it with ```dotnet run``` command.
 
 # TODO list
-- [ ] Add GUI (probably qt). Now it uses a very basic command line interface.
+- [x] Add GUI.
 - [ ] Add UPnP support.
 - [ ] Improve README.md

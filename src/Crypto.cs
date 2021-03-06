@@ -46,7 +46,7 @@ namespace ElectronChat
                 Mode = CipherMode.ECB
             };
             var decryptor = aes.CreateDecryptor();
-            return Encoding.UTF8.GetString(Program.TrimBytes(decryptor.TransformFinalBlock(msg, 0, msg.Length)));
+            return Encoding.UTF8.GetString(Utils.TrimBytes(decryptor.TransformFinalBlock(msg, 0, msg.Length)));
         }
 
         public static byte[] RSAEncrypt(string publicKeyStr, byte[] msg)
