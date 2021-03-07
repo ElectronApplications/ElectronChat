@@ -17,7 +17,7 @@
                 </ListBox>
 
                 <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding MessageText}"/>
-                <Button IsDefault="True" Grid.Column="1" Grid.Row="1" Command="{Binding SendMessage}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">Send</Button>
+                <Button IsEnabled="{Binding IsEnabled}" IsDefault="True" Grid.Column="1" Grid.Row="1" Command="{Binding SendMessage}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">Send</Button>
         </Grid>
 
 </UserControl>

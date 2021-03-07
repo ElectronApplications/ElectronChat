@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Sockets;
 using System.Threading;
@@ -11,7 +10,13 @@ namespace ElectronChat.Networking
     {
         private readonly NetworkStream stream;
         private ObservableCollection<MessageItem> messages = new ObservableCollection<MessageItem>();
-        public readonly Node opponent;
+        private bool isClosed;
+
+        public readonly Node Opponent;
+        public bool IsClosed
+        {
+            get => isClosed;
+        }
 
         public ObservableCollection<MessageItem> Messages {
             get => messages;
@@ -23,7 +28,7 @@ namespace ElectronChat.Networking
         {
             this.stream = stream;
             this.key = key;
-            opponent = node;
+            Opponent = node;
             new Thread(() => ListenMessages()).Start();
         }
 
@@ -35,7 +40,7 @@ namespace ElectronChat.Networking
                 {
                     string messageText = Crypto.AES256Decrypt(key, NetUtils.Read(stream));
                     DateTime time = DateTime.Now;
-                    messages.Add(new MessageItem() { SenderName = opponent.Name, MessageText = messageText, Date = time });
+                    messages.Add(new MessageItem() { SenderName = Opponent.Name, MessageText = messageText, Date = time });
                 }
             }
             catch (Exception)
@@ -61,6 +66,7 @@ namespace ElectronChat.Networking
         {
             stream.Close();
             Program.chats.Remove(this);
+            isClosed = true;
         }
 
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using ElectronChat.Networking;
 
 namespace ElectronChat.ViewModels
@@ -17,10 +18,17 @@ namespace ElectronChat.ViewModels
 
         public void ChooseNode(Node node)
         {
-            if (Utils.IsChatting(node))
-                ChatVM.ChangeChat(Utils.GetChat(node));
-            else
-                ChatVM.ChangeChat(new Sender(node).MakeChat());
+            new Thread(() =>
+            {
+                try
+                {
+                    if (Utils.IsChatting(node))
+                        ChatVM.ChangeChat(Utils.GetChat(node));
+                    else
+                        ChatVM.ChangeChat(new Sender(node, 0).MakeChat());
+                }
+                catch (Exception) {}
+            }).Start();
         }
     }
 }

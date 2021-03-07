@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using ReactiveUI;
 
 namespace ElectronChat.ViewModels
@@ -41,12 +42,15 @@ namespace ElectronChat.ViewModels
 
         public void RefreshNodes()
         {
-            try
+            new Thread(() =>
             {
-                Utils.RefreshNodes();
-            }
-            catch (Exception) {}
-            UpdateNodes();
+                try
+                {
+                    Utils.RefreshNodes();
+                }
+                catch (Exception) {}
+                UpdateNodes();
+            }).Start();      
         }
 
         public void UpdateNodes()

@@ -68,7 +68,7 @@ namespace ElectronChat
         public static bool IsChatting(Node node)
         {
             foreach (var chat in Program.chats)
-                if (node.Name == chat.opponent.Name && node.IP == chat.opponent.IP && node.Port == chat.opponent.Port)
+                if (node.Name == chat.Opponent.Name && node.IP == chat.Opponent.IP && node.Port == chat.Opponent.Port)
                     return true;
             return false;
         }
@@ -76,7 +76,7 @@ namespace ElectronChat
         public static Chat GetChat(Node node)
         {
             foreach (var chat in Program.chats)
-                if (node.Name == chat.opponent.Name && node.IP == chat.opponent.IP && node.Port == chat.opponent.Port)
+                if (node.Name == chat.Opponent.Name && node.IP == chat.Opponent.IP && node.Port == chat.Opponent.Port)
                     return chat;
             throw new Exception("Chat not found!");
         }
