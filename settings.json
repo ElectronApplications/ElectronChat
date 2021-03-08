@@ -2,6 +2,7 @@
   "Name": "ElectronApps",
   "IP": "0.0.0.0",
   "Port": 57394,
+  "EnableUPNP": true,
   "Nodes": [
     {
       "Name": "Laptop",

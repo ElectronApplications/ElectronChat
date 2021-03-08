@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Threading;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
@@ -10,13 +11,20 @@ namespace ElectronChat.Views
         public MainWindow()
         {
             AvaloniaXamlLoader.Load(this);
-            Closing += onClose;
+            Closed += OnClose;
         }
         
-        void onClose(object sender, CancelEventArgs e)
+        void OnClose(object sender, EventArgs e)
         {
-            Utils.SaveSettings();
-            Environment.Exit(0);
+            new Thread(() =>
+            {
+                try
+                {
+                    Utils.SaveSettings();
+                }
+                catch (Exception) {}
+                Environment.Exit(0);
+            }).Start();
         }
 
     }
