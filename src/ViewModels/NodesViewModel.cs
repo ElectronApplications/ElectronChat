@@ -38,6 +38,7 @@ namespace ElectronChat.ViewModels
         {
             this.mainWindow = mainWindow;
             Nodes = new ObservableCollection<Node>(Program.settings.Nodes);
+            RefreshNodes();
         }
 
         public void RefreshNodes()
