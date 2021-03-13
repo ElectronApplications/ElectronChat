@@ -30,6 +30,7 @@ namespace ElectronChat
                 device = e.Device;
                 mapping = new Mapping(Protocol.Tcp, Program.settings.Port, Program.settings.Port, 0, "ElectronChat");
                 await device.CreatePortMapAsync(mapping);
+                Console.WriteLine("Succesfully added UPNP entry");
             }
             catch (Exception) {}
             locker.Release();
@@ -40,6 +41,7 @@ namespace ElectronChat
             try
             {
                 device.DeletePortMap(mapping);
+                Console.WriteLine("Succesfully removed UPNP entry");
             }
             catch (Exception) {}
         }

@@ -29,6 +29,7 @@ namespace ElectronChat.Networking
             this.stream = stream;
             this.key = key;
             Opponent = node;
+            Console.WriteLine("Started chatting with " + Opponent.IP);
             new Thread(() => ListenMessages()).Start();
         }
 
@@ -64,6 +65,8 @@ namespace ElectronChat.Networking
 
         public void Close()
         {
+            messages.Add(new MessageItem(){ Date = DateTime.Now, MessageText = "The user has disconnected", SenderName = "" });
+            Console.WriteLine("Stopped chatting with " + Opponent.IP);
             stream.Close();
             Program.chats.Remove(this);
             isClosed = true;

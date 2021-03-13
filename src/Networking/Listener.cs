@@ -15,6 +15,7 @@ namespace ElectronChat.Networking
         {
             tcpListener = new TcpListener(ip, port);
             tcpListener.Start();
+            Console.WriteLine("Listening on port " + port);
             
             new Thread(() => ListenRequests()).Start();
         }
@@ -30,6 +31,8 @@ namespace ElectronChat.Networking
 
         void AcceptClient(TcpClient client)
         {
+            string ip = ((IPEndPoint) client.Client.RemoteEndPoint).Address.ToString();
+
             try
             {
                 NetworkStream stream = client.GetStream();
@@ -44,7 +47,6 @@ namespace ElectronChat.Networking
                 //Register node
                 string[] requestReg = Crypto.AES256Decrypt(key, NetUtils.Read(stream)).Split(" ");
                 Node node;
-                string ip = ((IPEndPoint) client.Client.RemoteEndPoint).Address.ToString();
                 if (Utils.ContainsNode(requestReg[0], ip, int.Parse(requestReg[1])))
                     node = Utils.GetNode(requestReg[0], ip, int.Parse(requestReg[1]));
                 else
@@ -54,6 +56,7 @@ namespace ElectronChat.Networking
                     Program.settings.Nodes.Add(node);
                     Utils.SaveSettings();
                 }
+                Console.WriteLine(ip + " just connected and secure connection was established");
 
                 while(true)
                 {
@@ -72,7 +75,9 @@ namespace ElectronChat.Networking
                     catch (Exception) { break; }
                 }
             }
-            catch (Exception) {
+            catch (Exception)
+            {
+                Console.WriteLine("Connection with " + ip + " was closed");
                 client.Close();
             }
         }
