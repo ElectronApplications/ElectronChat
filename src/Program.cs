@@ -19,7 +19,16 @@ namespace ElectronChat
         
         static void Main(string[] args)
         {
-            settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText("settings.json"));
+            try
+            {
+                settings = JsonSerializer.Deserialize<Settings>(File.ReadAllText("settings.json"));
+            }
+            catch (Exception)
+            {
+                settings = new Settings() { Name = Environment.MachineName, EnableUPNP = true, IP = "0.0.0.0", Port = 57394, Nodes = new List<Node>() };
+                Utils.SaveSettings();
+            }
+            
             Listener listener = new Listener(IPAddress.Parse(settings.IP), settings.Port);
             
             if (settings.EnableUPNP)
